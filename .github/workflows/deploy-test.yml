@@ -45,6 +45,9 @@ jobs:
       - name: Add test host to known_hosts
         run: ssh-keyscan -p "$TEST_PORT" -H "$TEST_HOST" >> ~/.ssh/known_hosts
 
+      - name: Ensure remote directory exists
+        run: ssh -p "$TEST_PORT" "${TEST_USER}@${TEST_HOST}" "mkdir -p '${TEST_REMOTE_DIR}'"
+
       - name: Upload image
         run: scp -P "$TEST_PORT" "${APP_NAME}_${{ github.sha }}.tar" "${TEST_USER}@${TEST_HOST}:${TEST_REMOTE_DIR}/"
 

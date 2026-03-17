@@ -42,6 +42,9 @@ jobs:
       - name: Add prod host to known_hosts
         run: ssh-keyscan -p "$PROD_PORT" -H "$PROD_HOST" >> ~/.ssh/known_hosts
 
+      - name: Ensure remote directory exists
+        run: ssh -p "$PROD_PORT" "${PROD_USER}@${PROD_HOST}" "mkdir -p '${PROD_REMOTE_DIR}'"
+
       - name: Upload image
         run: scp -P "$PROD_PORT" "${APP_NAME}_${{ github.sha }}.tar" "${PROD_USER}@${PROD_HOST}:${PROD_REMOTE_DIR}/"
 
