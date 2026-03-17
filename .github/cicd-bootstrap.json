@@ -1,0 +1,6 @@
+{
+  "app_name": "hello-cicd-demo",
+  "project_type": "go-service",
+  "deploy_mode": "docker-registry-only",
+  "test_branch": "develop"
+}
