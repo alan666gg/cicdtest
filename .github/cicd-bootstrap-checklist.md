@@ -5,21 +5,31 @@
 - 服务路径：
   - `.`
 - 应用名称：`hello-cicd-demo`
-- 部署策略：`docker-registry-only`
+- 部署策略：`docker-ssh`
 - 测试分支：`develop`
 
 ## 必填 Secrets
 
-- `REGISTRY_USERNAME`
-- `REGISTRY_PASSWORD`
+- `TEST_SSH_KEY`
+- `PROD_SSH_KEY`
 
 ## 必填 Variables
 
-- 无（默认使用 repo config 里的 `image_registry`）
+- `TEST_HOST`
+- `TEST_USER`
+- `PROD_HOST`
+- `PROD_USER`
+- `TEST_REMOTE_DIR`
+- `TEST_CONTAINER_NAME`
+- `TEST_DOCKER_RUN_ARGS`
+- `PROD_REMOTE_DIR`
+- `PROD_CONTAINER_NAME`
+- `PROD_DOCKER_RUN_ARGS`
 
 ## 可选 Variables
 
-- `IMAGE_REGISTRY`（覆盖 repo config 里的 registry 前缀，workflow 会自动转成小写）
+- `TEST_PORT`
+- `PROD_PORT`
 
 ## 组织级推荐配置
 
@@ -32,17 +42,22 @@
 - `image_registry`
 - `runner`
 - `enable_security_scan`
+- `security_scan_blocking`
 - `enable_cache`
 - `test_environment`
 - `prod_environment`
 
 ## 使用说明
 
-1. 先确认镜像仓库前缀是否正确，例如 `ghcr.io/acme-team`。
-2. 如果 registry 前缀放在 `IMAGE_REGISTRY` 变量里，workflow 会自动把前缀转成小写并复用对应 host 登录。
-3. 配置 `REGISTRY_USERNAME` 和 `REGISTRY_PASSWORD`。
-4. 推送到测试分支，确认测试镜像已经成功推送。
-5. 再手动触发生产 workflow，推送生产标签。
+1. 先把 Secrets 和 Variables 配齐。
+2. 推送到测试分支，观察 `CI` 和 `Deploy Test` 工作流。
+3. 确认测试环境没问题后，再手动触发 `Deploy Prod`。
+
+## 安全扫描默认策略
+
+- 默认开启安全扫描，但 bootstrap 模式下是 non-blocking。
+- PR 和 `develop` 这类测试分支默认只告警，不阻断流水线。
+- 如果把 `.github/cicd-bootstrap.json` 里的 `security_scan_blocking` 设为 `true`，推送到默认分支和 `release` / `release/*` 分支时会对 `HIGH` / `CRITICAL` 漏洞阻断。
 
 ## 备注
 
